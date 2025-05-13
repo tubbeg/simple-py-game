@@ -1,22 +1,19 @@
 import pyxel
 
 
-x = 0
-
-def calc_pos (a):
-    return (a + 1) % pyxel.width
 
 def update():
-    global x
-    x = calc_pos(x)
+    pass
 
 def draw():
     pyxel.cls(0)
-    pyxel.rect(x, 0, 8, 8, 9)
+    pyxel.blt(0, 0, 0, 0, 0, 16, 16)
+    #pyxel.rect(x, 0, 8, 8, 9)
 
 
 def run_game ():
     pyxel.init(160, 120)
+    pyxel.load("adv1.pyxres")
     pyxel.run(update, draw)
 
 

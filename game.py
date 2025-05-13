@@ -2,18 +2,19 @@ import pyxel
 import control as ctrl
 import sprite as s
 
-sprite_pos = (0,0)
-sprite_frame = 0
+
+spr = s.PxSprite(0,0,0,0,0)
+
 
 def update():
-    global sprite_pos
+    global spr
     dir = ctrl.get_direction ()
-    sprite_pos = s.move_sprite (dir, sprite_pos)
+    spr = s.move_sprite (dir, spr)
 
 def draw():
-    global sprite_frame
+    global spr
     pyxel.cls(0)
-    sprite_frame = s.draw_sprite(sprite_frame, sprite_pos)
+    spr = s.draw_sprite(spr)
     #pyxel.rect(x, 0, 8, 8, 9)
 
 def run_game ():
@@ -21,8 +22,6 @@ def run_game ():
     pyxel.load("adv1.pyxres")
     pyxel.run(update,draw)
 
-
-run_game()
 
 if __name__ == "__main__":
     run_game()

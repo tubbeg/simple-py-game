@@ -1,23 +1,33 @@
 import pyxel
 import control as ctrl
+from dataclasses import dataclass
 
 
 
+@dataclass
+class PxSprite():
+    frame : int
+    x : int
+    y : int
+    size = (16,16)
+    res_x : int
+    res_y : int
 
-
-def draw_sprite(frame,pos):
-    x,y = pos
-    new_frame = frame + 1
+def draw_sprite(spr):
+    x,y = spr.x,spr.y
+    new_frame = spr.frame + 1
     new_frame = new_frame % 2
-    pyxel.blt(x, y, new_frame, 0, 0, 16, 16)
-    return (new_frame)
+    a,b = spr.size
+    pyxel.blt(x, y, new_frame, spr.res_x, spr.res_y, a, b)
+    spr.frame = new_frame
+    return spr
 
 
-
-def move_sprite(dir, pos):
-    x,y = pos
+def move_sprite(dir, spr):
     if dir is ctrl.Direction.LEFT:
-        return (x - 1, y)
+        spr.x = spr.x - 1
+        return spr
     if dir is ctrl.Direction.RIGHT:
-        return (x + 1, y)
-    return pos
+        spr.x = spr.x + 1
+        return spr
+    return spr

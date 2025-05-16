@@ -2,10 +2,20 @@ import pyxel
 import control as ctrl
 from dataclasses import dataclass
 
+
+def none_a ():
+    return ctrl.Action.NONE
+
+def jump_a ():
+    return ctrl.Action.JUMP
+
 @dataclass
 class PxSprite():
-    state : ctrl.Direction
-    frame : int
+    gravity = 0.01
+    jump : ctrl.Action
+    velocity : int
+    def_frame = 0
+    next_frame = []
     x : int
     y : int
     size = (16,16)
@@ -17,49 +27,38 @@ def should_update_frame(f):
     update_at = pyxel.frame_count % f
     return (update_at == 0)
 
-def is_walking(spr):
-    return (spr.state is not ctrl.Direction.NOWHERE)
+def is_jumping(spr):
+    return (spr.jump is not ctrl.Action.NONE)
+
+def set_frame(spr):
+    #if should_update_frame(spr.update_anim_freq):
+    for _ in range(0,30):
+        spr.next_frame.append(1)
+    return spr
 
 def update_frame(spr):
-    if is_walking(spr):
-        if should_update_frame(spr.update_anim_freq):
-            new_frame = spr.frame + 1
-            new_frame = new_frame % 2
-            spr.frame = new_frame
-            return spr
-        else:
-            return spr
-    else:
-        spr.frame = 0
-        return spr
+    if is_jumping(spr):
+        spr.jump = none_a()
+        #print ("setting frame")
+        return set_frame(spr)
+    return spr
 
 def draw_sprite(spr):
     x,y = spr.x,spr.y
     a,b = spr.size
     spr = update_frame (spr)
-
-    pyxel.blt (x, y, spr.frame, spr.res_x, spr.res_y, a, b)
+    if not spr.next_frame:
+        draw_frame = spr.def_frame
+    else:
+        draw_frame = spr.next_frame.pop(0)
+    pyxel.blt (x, y, draw_frame, spr.res_x, spr.res_y, a, b)
     return spr
 
 def move_sprite(dir, spr):
-    spr.state = dir
-    if dir is ctrl.Direction.LEFT:
-        spr.x = spr.x - 1
-    if dir is ctrl.Direction.RIGHT:
-        spr.x = spr.x + 1
-    if dir is ctrl.Direction.UP:
-        spr.y = spr.y - 1
-    if dir is ctrl.Direction.DOWN:
-        spr.y = spr.y + 1
-    if dir is ctrl.Direction.UPLEFT:
-        spr.y = spr.y - 1
-        spr.x = spr.x - 1
-    if dir is ctrl.Direction.DOWNLEFT:
-        spr.y = spr.y + 1
-        spr.x = spr.x - 1
-    if dir is ctrl.Direction.UPRIGHT:
-        spr.y = spr.y - 1
-        spr.x = spr.x + 1
-    if dir is ctrl.Direction.DOWNRIGHT:
-        spr.y = spr.y + 1
-        spr.x = spr.x + 1
+    spr.jump = dir
+    if dir is none_a():
+        spr.velocity = spr.velocity + spr.gravity
+        spr.y = spr.y + spr.velocity
+    if dir is jump_a():
+        spr.velocity = spr.velocity - 1
+    
